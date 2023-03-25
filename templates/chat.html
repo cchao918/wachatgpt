@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>chat gpt</title>
+    <div id="divmain" class="chat-container">
+        <meta charset="utf-8">
+
+        <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/vs2015.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.1.3/marked.min.js"></script> 
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.js"></script> -->
+
+
+
+        <link rel="stylesheet" href="{{ url_for('getcss', path='vs2015.min.css') }}">
+        <script src="{{ url_for('getjs', path='highlight.min.js') }}"></script>
+        <script src="{{ url_for('getjs', path='marked.min.js') }}"></script>
+        <script src="{{ url_for('getjs', path='codemirror.min.js') }}"
+            integrity="sha512-6j+JyV7hF+Ls1V2fjXOZ1v2ZJdWw+3q0uKtEJv7p8JWlF+7RcX9DnFm8HdZb5M5R1eJ+1vQ8Lc5q5x5J5X1YQvJ8Wd+qo3n0tZnE7v8pWzLgj+1R9XrKLZvTlE0w=="
+            crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="{{ url_for('getcss', path='codemirror.min.css') }}"
+            integrity="sha512-1zj4f6xJi6M9Z0eJZpWdZiBw1RJ0yK2v5l5c5q5x5J5X1YQvJ8Wd+qo3n0tZnE7v8pWzLgj+1R9XrKLZvTlE0w=="
+            crossorigin="anonymous">
+
+        <script>hljs.highlightAll();</script>
+
+
+
+        <style>
+            * {
+                font-weight: bold;
+                -webkit-user-select: text;
+                /* Safari */
+                -moz-user-select: text;
+                /* Firefox */
+                -ms-user-select: text;
+                /* Internet Explorer/Edge */
+                user-select: text;
+            }
+
+            chat-container {
+                background-color: #f1f1f1;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                /* margin: 20px auto; */
+                /* max-width: 600px; */
+                padding: 20px;
+                position: relative;
+
+                width: 80%;
+                margin: 20px auto;
+                max-height: 50%;
+            }
+
+            .chat-header {
+                background-color: #333;
+                border-radius: 5px 5px 0 0;
+                color: #fff;
+                display: flex;
+                justify-content: space-between;
+                padding: 10px;
+            }
+
+            .chat-header h1 {
+                font-size: 1.5rem;
+                margin: 0;
+            }
+
+            .chat-header button {
+                background-color: transparent;
+                border: none;
+                color: #fff;
+                cursor: pointer;
+                font-size: 1.2rem;
+            }
+
+            .chat-messages {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .chat-messages li {
+                border-radius: 5px;
+                margin-bottom: 10px;
+                padding: 10px;
+                white-space: pre-wrap;
+            }
+
+            .chat-messages li.user-message {
+                background-color: #fff;
+                border: 1px solid #ccc;
+                float: left;
+                max-width: 60%;
+            }
+
+            .chat-messages li.chatgpt-message {
+                background-color: #0084ff;
+                color: #fff;
+                float: right;
+                max-width: 60%;
+            }
+
+            .chat-input {
+                border: none;
+                border-radius: 5px;
+                font-size: 1rem;
+                margin-top: 10px;
+                padding: 10px;
+                width: 100%;
+            }
+
+            /* 移动端样式*/
+            @media only screen and (max-width: 1000px) {
+                .indexmain {
+                    padding-top: 10% !important;
+                }
+
+                .chat-input {
+                    font-size: 2.5rem;
+                }
+
+                .chat-messages li {
+                    font-size: 2.5rem;
+                }
+            }
+        </style>
+
+</head>
+
+<body>
+    <div class="chat-header">
+        <h1>蛙助手</h1>
+    </div>
+
+    <form id="chat-form" onsubmit="handleFormSubmit(event)">
+        <input type="text" class="chat-input" placeholder="输入您的问题...">
+        <!-- <textarea id="myTextarea" class="chat-input"></textarea> -->
+    </form>
+
+
+
+    <ul class="chat-messages"></ul>
+    <script>
+        function addMessage(author, message) {
+            const chatMessages = document.querySelector('.chat-messages');
+            const messageElement = document.createElement('li');
+            messageElement.classList.add('chat-message');
+            const authorElement = document.createElement('div');
+            authorElement.classList.add('message-author');
+            authorElement.innerText = author;
+            const codeElement = document.createElement('code');
+            codeElement.classList.add('hljs');
+            codeElement.innerHTML = marked(message);
+            const preElement = document.createElement('pre');
+            preElement.appendChild(codeElement);
+            const textElement = document.createElement('div');
+            textElement.classList.add('message-text');
+            textElement.appendChild(preElement);
+            messageElement.appendChild(authorElement);
+            messageElement.appendChild(textElement);
+            chatMessages.prepend(messageElement); // 将新消息插入到聊天框的顶部
+            hljs.highlightBlock(codeElement);
+        }
+
+
+        function handleFormSubmit(e) {
+            const chatInput = document.querySelector('.chat-input');
+            e.preventDefault();
+            const message = chatInput.value;
+            if (message.trim() !== '') {
+                addMessage('我:', message);
+                chatInput.value = '';
+                chatInput.focus();
+                fetch(`/chat/get?msg=${encodeURIComponent(message)}`)
+                    .then(response => response.text())
+                    .then(data => {
+                        addMessage('🐸(*╹▽╹*):', data);
+                        chatInput.focus();
+                        // Call your refresh method here
+                        // refresh();
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        addMessage('🐸:', '临表涕零，不知所云(*╹▽╹*).');
+                    });
+            }
+        }
+
+    </script>
+
+    </div>
+</body>
