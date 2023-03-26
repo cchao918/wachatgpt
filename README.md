@@ -12,8 +12,6 @@ http://127.0.0.1/chat
 <br>
 
 <br>
-crontab <br>
-@reboot /bin/bash /home/ubuntu/chat/start.sh<br>
+run 
 <br>
-*/5 * * * * /bin/bash /home/ubuntu/chat/start.sh<br>
-
+nohup ./run.sh > /dev/null 2>&1 &
