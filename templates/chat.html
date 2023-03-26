@@ -18,8 +18,8 @@
     <meta name="apple-mobile-web-app-title" content="蛙的私人助理">
     <meta name="viewport" content=" maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon" href="{{ url_for('getimg', path='chat.png') }}">
-    <link rel="icon" href="{{ url_for('getimg', path='chat.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('getimg', path='app.ico') }}">
+    <link rel="icon" href="{{ url_for('getimg', path='app.ico') }}">
 
     <link rel="stylesheet" href="{{ url_for('getcss', path='vs2015.min.css') }}">
     <script src="{{ url_for('getjs', path='highlight.min.js') }}"></script>
@@ -34,6 +34,22 @@
 <body>
     <div id="divmain" class="chat-container">
         <style>
+            body::before {
+                content: " ";
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: transparent;
+                z-index: -1;
+                /* 控制透明度 */
+                background-image: url("{{ url_for('getimg', path='bkpic.jpg') }}");
+                background-size: cover;
+                opacity: 0.5;
+                /* 控制透明度 */
+            }
+
             .chat-container * {
                 font-weight: bold;
                 -webkit-user-select: text;
@@ -152,6 +168,9 @@
 
             /* 移动端样式*/
             @media only screen and (max-width: 1000px) {
+                body::before {
+                    background-image: url("{{ url_for('getimg', path='bkpic_mobile.jpg') }}");
+                }
 
                 .chat-container * {
                     font-size: 120%;
@@ -204,7 +223,7 @@
     </div> -->
         <form id="chat-form" onsubmit="handleFormSubmit(event)">
             <input type="text" class="chat-input" placeholder="说出你的梦想[]~(￣▽￣)~*">
-            <!-- <textarea id="myTextarea" class="chat-input"></textarea> -->
+            <!-- <textarea id="myTextarea" class="chat-input"></textarea> -->q
         </form>
 
         <ul class="chat-messages"></ul>
