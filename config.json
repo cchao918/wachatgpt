@@ -1,3 +1,10 @@
 {
-    "OPENAI_API_KEY": "my api key"
+    "OPENAI_API_KEY": "sk-xxxxx",
+    "USERNAME":"xxxxx",
+    "PASSWORD":"xxxxx",
+    "MAXMSG_COUNT":1000,
+    "LANGIAGE":"zh",
+    "ENGINE":"gpt-3.5-turbo",
+    "PROMPT":"这里是助手蛙，请说出你的疑惑(*╹▽╹*)"
+    
 }
