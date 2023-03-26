@@ -3,7 +3,7 @@
 <html>
 
 <head>
-    <title>蛙的私人助理</title>
+    <title>私人助理蛙</title>
     <meta charset="utf-8">
 
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/vs2015.min.css">
@@ -82,6 +82,49 @@
                 display: flex;
                 justify-content: space-between;
                 padding: 10px;
+            }
+
+            #balance {
+                margin-left: auto;
+                margin-right: auto;
+                /* animation: hideBalance 1s ease-out 5s forwards; */
+                /* opacity: 1; */
+                /* visibility: visible; */
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                background-color: rgb(255, 255, 255, 0.7);
+                border: 1px solid rgb(204, 204, 204, 0.7);
+                padding: 10px;
+                transform: translate(-50%, -50%);
+                z-index: 3;
+
+                animation: showBalance 6s ease-out 1s forwards;
+                visibility: hidden;
+                opacity: 0;
+            }
+
+            @keyframes showBalance {
+                0% {
+                    opacity: 0;
+                    visibility: hidden;
+                }
+
+                50% {
+                    opacity: 1;
+                    visibility: visible;
+                }
+
+                100% {
+                    opacity: 0;
+                    visibility: hidden;
+                }
+            }
+
+            #balance.hide {
+                opacity: 0;
+                visibility: hidden;
+                position: absolute;
             }
 
             .hljs {
@@ -201,11 +244,29 @@
                 }
 
                 .chath1 {
-                    font-size: 30px;
+                    padding: 15px 25px;
+                    font-size: 45px !important;
+                    justify-content: center !important;
+                    align-items: center !important;
+                    border-radius: 4px !important;
+                    ;
+                }
+
+                #nick {
+                    display: flex !important;
+                }
+
+                .clear-button {
+                    font-size: 45px !important;
+                    /* 设置字体大小 */
+                    padding: 0px 16px;
+                    /* 设置内边距 */
+                    border-radius: 4px;
+                    /* 设置边框圆角 */
                 }
 
                 .copy-button {
-                    font-size: 35px !important;
+                    font-size: 45px !important;
                     /* 设置字体大小 */
                     padding: 8px 16px;
                     /* 设置内边距 */
@@ -215,15 +276,14 @@
             }
         </style>
         <div class="chat-header">
-            <h1 cid="chath1" class='chath1'>私人助理蛙</h1>
-            <button class="clear-button" style="margin-left: auto;" onclick="clearChatHistory()">清除历史记录</button>
+            <h1 id="nick" class="chath1">私人助理蛙</h1>
+            <button class="clear-button" onclick="clearChatHistory()">清除聊天记录</button>
         </div>
-        <!-- <div>
-        OpenAI 余额: {{ balance }}
-    </div> -->
+        <div id="balance" class="chath1">余额: 💲{{balance}}</div>
+
         <form id="chat-form" onsubmit="handleFormSubmit(event)">
             <input type="text" class="chat-input" placeholder="说出你的梦想[]~(￣▽￣)~*">
-            <!-- <textarea id="myTextarea" class="chat-input"></textarea> -->q
+            <!-- <textarea id="myTextarea" class="chat-input"></textarea> -->
         </form>
 
         <ul class="chat-messages"></ul>
@@ -385,19 +445,57 @@
             // }
 
             // 消息接受处理
+            // function handleFormSubmit(e) {
+            //     const chatInput = document.querySelector('.chat-input');
+            //     const chatTitle = document.querySelector('.chath1');
+            //     e.preventDefault();
+            //     const message = chatInput.value;
+            //     if (message.trim() !== '') {
+            //         chatTitle.innerText = '私人助理蛙(打字中...)'; // 将标题改为 "私人助理蛙(打字中...)"
+            //         addMessage('我:', message, false);
+            //         chatInput.value = '';
+            //         chatInput.focus();
+            //         fetch(`/chat/get?msg=${encodeURIComponent(message)}`)
+            //             .then(response => response.text())
+            //             .then(data => {
+            //                 addMessage('🐸(*╹▽╹*):', data, false);
+            //                 chatInput.focus();
+            //                 chatTitle.innerText = '私人助理蛙'; // 将标题改回原来的文本内容
+            //                 // Call your refresh method here
+            //                 // refresh();
+            //             })
+            //             .catch(error => {
+            //                 console.error(error);
+            //                 addMessage('🐸:', '临表涕零，不知所云(*╹▽╹*).', false);
+            //                 chatTitle.innerText = '私人助理蛙'; // 将标题改回原来的文本内容
+            //             });
+            //     }
+            // }
+
             function handleFormSubmit(e) {
                 const chatInput = document.querySelector('.chat-input');
                 const chatTitle = document.querySelector('.chath1');
                 e.preventDefault();
                 const message = chatInput.value;
                 if (message.trim() !== '') {
-                    chatTitle.innerText = '私人助理蛙(打字中...)'; // 将标题改为 "私人助理蛙(打字中...)"
+                    let count = 0;
+                    const intervalId = setInterval(() => {
+                        count++;
+                        if (count % 3 === 1) {
+                            chatTitle.innerText = '私人助理蛙(打字中.)';
+                        } else if (count % 3 === 2) {
+                            chatTitle.innerText = '私人助理蛙(打字中..)';
+                        } else {
+                            chatTitle.innerText = '私人助理蛙(打字中...)';
+                        }
+                    }, 500); // 每 500 毫秒切换一次标题文本内容
                     addMessage('我:', message, false);
                     chatInput.value = '';
                     chatInput.focus();
                     fetch(`/chat/get?msg=${encodeURIComponent(message)}`)
                         .then(response => response.text())
                         .then(data => {
+                            clearInterval(intervalId); // 清除定时器
                             addMessage('🐸(*╹▽╹*):', data, false);
                             chatInput.focus();
                             chatTitle.innerText = '私人助理蛙'; // 将标题改回原来的文本内容
@@ -405,12 +503,14 @@
                             // refresh();
                         })
                         .catch(error => {
+                            clearInterval(intervalId); // 清除定时器
                             console.error(error);
                             addMessage('🐸:', '临表涕零，不知所云(*╹▽╹*).', false);
                             chatTitle.innerText = '私人助理蛙'; // 将标题改回原来的文本内容
                         });
                 }
             }
+
 
 
 

@@ -7,6 +7,7 @@ from pathlib import Path
 from revChatGPT.V3 import Chatbot
 import openai
 import pickle
+import requests
 
 cur_dir = os.path.abspath(__file__).rsplit(os.path.sep, 1)[0]
 parent_dir = os.path.dirname(cur_dir)
@@ -153,6 +154,26 @@ def login():
 
 ###############################################################################
 
+
+
+def  getbalance():
+    try:
+        url = 'https://api.openai.com/dashboard/billing/credit_grants'
+        headers = {'Authorization': 'Bearer ' + openaikey}
+        response = requests.get(url, headers=headers)
+
+        if response.status_code == 200:
+            data = response.json()
+            grant_amount = data['grants']['data'][0]['grant_amount']
+            used_amount = data['grants']['data'][0]['used_amount']
+            available_amount = grant_amount - used_amount
+            return available_amount
+        else:
+            return 0 
+    
+    except Exception as e:
+        return -1 
+
 parent_dir = Path(__file__).resolve().parent
 # chatbot = Chatbot(api_key=openaikey)
 chatbot = Chatbot(api_key=openaikey, engine=initengine,system_prompt=prompt)
@@ -174,8 +195,8 @@ def generate_response(prompt):
 def chat():
     if not (session.__contains__('username') and session.__contains__('password') and session['username'] == username and session['password'] == password):
         return redirect('/')
-    # Retrieve balance from session
-    balance = session.get('balance', 0)
+
+    balance = round(getbalance(),2)
     return render_template("chat.html", balance=balance,maxmsgcount=maxmsgcount)
 
 @app.route("/chat/get")
