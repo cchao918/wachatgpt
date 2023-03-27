@@ -8,6 +8,7 @@ from revChatGPT.V3 import Chatbot
 import openai
 import pickle
 import requests
+import threading
 
 cur_dir = os.path.abspath(__file__).rsplit(os.path.sep, 1)[0]
 parent_dir = os.path.dirname(cur_dir)
@@ -177,6 +178,27 @@ def  getbalance():
 parent_dir = Path(__file__).resolve().parent
 # chatbot = Chatbot(api_key=openaikey)
 chatbot = Chatbot(api_key=openaikey, engine=initengine,system_prompt=prompt)
+
+#强化角色
+def createrole():
+    try:
+        chatbot.ask(prompt)
+    except Exception as e:
+        try:
+            chatbot.ask(prompt)
+        except Exception as e:
+            try:
+                chatbot.ask(prompt)
+            except Exception as e:
+                try:
+                    chatbot.ask(prompt)
+                except Exception as e:
+                    pass
+
+t = threading.Thread(target=createrole, args=())
+t.name = 'create_role'
+t.start()
+
 def generate_response(prompt):
     # 获取该用户的Chatbot实例
     # serialized_chatbot = session.get('chatbot')
