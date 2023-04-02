@@ -160,7 +160,8 @@ def login():
 def  getbalance():
     try:
         url = 'https://api.openai.com/dashboard/billing/credit_grants'
-        headers = {'Authorization': 'Bearer ' + openaikey}
+        # headers = {'Authorization': 'Bearer ' + openaikey}
+        headers = {'Authorization': 'Bearer ' + openaikey ,'Content-Type': 'application/json'}
         response = requests.get(url, headers=headers)
 
         if response.status_code == 200:
@@ -170,7 +171,7 @@ def  getbalance():
             available_amount = grant_amount - used_amount
             return available_amount
         else:
-            return 0 
+            return -1 
     
     except Exception as e:
         return -1 
@@ -218,7 +219,8 @@ def chat():
     if not (session.__contains__('username') and session.__contains__('password') and session['username'] == username and session['password'] == password):
         return redirect('/')
 
-    balance = round(getbalance(),2)
+    # balance = round(getbalance(),2)
+    balance = 0
     return render_template("chat.html", balance=balance,maxmsgcount=maxmsgcount)
 
 @app.route("/chat/get")
