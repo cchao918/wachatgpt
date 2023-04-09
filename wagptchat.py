@@ -136,6 +136,12 @@ def login():
         # 认证成功，保存用户名到session
         session['username'] = username_input
         session['password'] = password_input
+
+        # 将用户名和密码存储到 cookies 中，并设置过期时间为 7 天
+        response = redirect('/chat')
+        response.set_cookie('username', username, max_age=365*24*60*60)
+        response.set_cookie('password', password, max_age=365*24*60*60)
+
         # # 连接到OpenAI API
         # openai.api_key = openaikey
         # # 为该用户创建一个唯一的会话 ID
@@ -144,7 +150,7 @@ def login():
         # chatbot = Chatbot(api_key=openaikey)
         # serialized_chatbot = pickle.dumps(chatbot)
         # session['chatbot'] = serialized_chatbot
-        return redirect('/chat')
+        return response
     else:
         # 认证失败，返回错误信息
         return '用户名/密码错误'
@@ -217,7 +223,11 @@ def generate_response(prompt):
 @app.route("/chat")
 def chat():
     if not (session.__contains__('username') and session.__contains__('password') and session['username'] == username and session['password'] == password):
-        return redirect('/')
+        if  request.cookies.__contains__('username') and  request.cookies.__contains__('password') and  request.cookies['username']== username and request.cookies['password']==password:
+            session['username'] = request.cookies['username']
+            session['password'] = request.cookies['password']
+        else:
+            return redirect('/')
 
     # balance = round(getbalance(),2)
     balance = 0
