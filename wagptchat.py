@@ -10,6 +10,11 @@ import pickle
 import requests
 import threading
 
+# 国内
+os.environ["API_URL"] = "https://api.chatanywhere.tech/v1/chat/completions"
+# 国外
+# os.environ["API_URL"] = "https://api.chatanywhere.cn/v1/chat/completions"
+
 cur_dir = os.path.abspath(__file__).rsplit(os.path.sep, 1)[0]
 parent_dir = os.path.dirname(cur_dir)
 
